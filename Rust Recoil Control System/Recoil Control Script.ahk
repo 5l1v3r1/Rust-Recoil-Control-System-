@@ -35,8 +35,12 @@ Gui Add, Radio, vAK474xScope gAK474xScope x8 y168 w120 h23, AK47 4x Scope
 Gui Add, Radio, vLR300 gLR300 x8 y192 w120 h23, LR-300
 Gui Add, Radio, vMP5 gMP5 x8 y216 w120 h23, MP5
 Gui Add, Radio, vAK47Laser gAK47Laser x8 y240 w120 h23, Ak47 Laser
+Gui Add, Radio, vp250NoAttachments gp250NoAttachments x8 y287 w120 h23, p250 No Attachments
 Gui Add, Radio, vAutofire gAutofire x8 y266, Auto Fire
-Gui Add, Radio, vDisableAll gDisableAll x8 y283 w120 h23, Disable All
+Gui Add, Radio, vSemiRifleHolo gSemiRifleHolo x8 y309 w120 h23, Semi-Rifle Holo Sight
+Gui Add, Radio, vakSilencer gakSilencer x150 y18, Ak47 Silencer
+Gui Add, Radio, vakSilencerLaser gakSilencerLaser x150 y36, Ak47 Silencer and Laser
+Gui Add, Radio, vDisableAll gDisableAll x150 y50 w120 h23, Disable All
 
 Return
 
@@ -51,21 +55,25 @@ _auto := false
 _lr300 := false
 _ak474x := false
 _akLaser := false
+_akSilencer := false
+_akSilencerLaser := false
 _mp5 := false
+_p250 := false
+_semiHolo := false
 
 ; Configurations
     ; Crosshair Config						
-        crsLocation 	:= "Cross.png"
-        crsHeight 	:= "10"
-        crsWidth 	:= "10"
-        invsColor	:= "ffffff"
-        locCompensator	:= "4"	
-        locX		:= "960"
-        locY		:= "540"
+        ;crsLocation 	:= "Cross.png"
+        ;crsHeight 	:= "10"
+        ;crsWidth 	:= "10"
+        ;invsColor	:= "ffffff"
+        ;locCompensator	:= "4"	
+        ;locX		:= "960"
+        ;locY		:= "540"
         ; -----------------------------------------------------------
-        diflocX := locX - locCompensator
-        diflocY := locY - locCompensator
-        setCross = 0
+        ;diflocX := locX - locCompensator
+        ;diflocY := locY - locCompensator
+        ;setCross = 0
 
 ; HotKeys
 Insert::
@@ -93,8 +101,8 @@ CrosshairToggle:
         {
             ;Config						
             crsLocation 	:= "Cross.png"
-            crsHeight 	:= "10"
-            crsWidth 	:= "10"
+            crsHeight 	:= "7"
+            crsWidth 	:= "7"
             invsColor	:= "ffffff"
             locCompensator	:= "4"	
             locX		:= "960"
@@ -105,7 +113,7 @@ CrosshairToggle:
             diflocY := locY - locCompensator
             setCross = 0
             
-            XButton2::
+            ~XButton2::
                 if (setCross = 0) {
                     Gui, chscript: New
                     Gui, Add, Picture, x0 y0 h%crsHeight% w%crsWidth%, %crsLocation%
@@ -141,6 +149,10 @@ Thompson:
 SemiRifleNoAttachments:
     _semiNoAttachments := ! _semiNoAttachments
     return
+    
+SemiRifleHolo:
+    _semiHolo := ! _semiHolo
+    return
 
 SemiRifle4xScope:
     _semi4x := ! _semi4x
@@ -152,6 +164,14 @@ SemiRifleSilenced:
 
 AK47NoAttachments:
     _ak47NoAttachments := ! _ak47NoAttachments
+    return
+    
+akSilencer:
+    _akSilencer := ! _akSilencer
+    return
+    
+akSilencerLaser:
+    _akSilencerLaser := ! _akSilencerLaser
     return
 
 M249:
@@ -173,6 +193,10 @@ MP5:
 AK47Laser:
     _akLaser := ! _akLaser
     return
+    
+p250NoAttachments:
+    _p250 := ! _p250
+    return
 
 DisableAll:
     _thompson := false
@@ -185,9 +209,12 @@ DisableAll:
     _lr300 := false
     _ak474x := false
     _akLaser := false
+    _akSilencer := false
+    _akSilencerLaser := false
     _mp5 := false
+    _p250 := false
+    _semiHolo := false
     
-    setCross = 0
     return
 
 ~LButton::
@@ -227,6 +254,22 @@ DisableAll:
 								If (_ak474x = true) {
 									ak474x()
 								}
+                                else
+                                    If (_p250 = true) {
+                                        p250()
+                                    }
+                                    else
+                                        If (_semiHolo = true) {
+                                            semiHolo()
+                                        }
+                                        else
+                                            If (_akSilencer = true) {
+                                                akSilencer()
+                                            }
+                                            else
+                                                If (_akSilencerLaser = true) {
+                                                    akSilencerLaser()
+                                                }
                                 
 ~LCtrl & ~LButton::
     If (_thompson = true) {
@@ -272,6 +315,22 @@ DisableAll:
 											If (_auto = true) {
 												autofire()
 											}
+                                            else
+                                                If (_p250 = true) {
+                                                    p250()
+                                                }
+                                                else
+                                                    If (_semiHolo = true) {
+                                                        semiHolo()
+                                                    }
+                                                    else
+                                                        If (_akSilencer = true) {
+                                                            akSilencer()
+                                                        }
+                                                        else
+                                                            If (_akSilencerLaser = true) {
+                                                                akSilencerLaser()
+                                                            }
 
 ; Functions
 thompson()
@@ -284,10 +343,10 @@ thompson()
         {
             If GetKeyState("LCtrl", "LButton")
             {
-               Sleep, 6
-				Y( moveAmount, 1.38 )
-				X( moveAmount, 0.35 )
-				X( moveAmount, -0.4 )
+                Sleep, 6
+                    Y( moveAmount, 1.38 )
+                    X( moveAmount, 0.35 )
+                    X( moveAmount, -0.4 )
             }
             
             If Not GetKeyState( "LButton" ) 
@@ -303,6 +362,38 @@ semi_noatt()
     global _semiNoAttachments
     
     If _semiNoAttachments
+    {
+        Loop
+        {
+            If GetKeyState("LCtrl", "LButton")
+            {
+                Sleep, 51.3
+                    Y(moveAmount, 9.82)
+                    X(moveAmount, -5.82)
+                    X( moveAmount, 4.95 )
+            }
+			else
+				If GetKeyState("RButton", "LButton")
+				{
+					Sleep, 54
+						Y(moveAmount, 18.5)
+						X(moveAmount, -3.8)
+						X(moveAmount, 2)
+				}
+			
+				If Not GetKeyState( "LButton" ) 
+				{
+                    Break
+                }
+        }
+    }
+}
+
+semiHolo()
+{
+    global _semiHolo
+    
+    If _semiHolo
     {
         Loop
         {
@@ -369,17 +460,17 @@ semi_silenced()
             If GetKeyState("LCtrl", "LButton")
             {
                Sleep, 64
-				Y( moveAmount, 9 )
-				X( moveAmount, -6 )
-				X( moveAmount, 3.1)
+                    Y( moveAmount, 9 )
+                    X( moveAmount, -6 )
+                    X( moveAmount, 3.1)
             }
             else
                 If GetKeyState("RButton", "LButton")
                 {
                     Sleep, 64
-					Y( moveAmount, 15.9 )
-					X( moveAmount, -6 )
-					X( moveAmount, 2 )
+                        Y( moveAmount, 15.9 )
+                        X( moveAmount, -6 )
+                        X( moveAmount, 2 )
                 }
                 
                 If Not GetKeyState( "LButton" ) 
@@ -400,9 +491,9 @@ ak47()
         {
             If GetKeyState("LCtrl", "LButton")
             {
-               Sleep, 1
-				Y( moveAmount, 1.7 )
-				X( moveAmount, -0.2 )
+                Sleep, 1
+                    Y( moveAmount, 2.8 )
+                    X( moveAmount, -0.1 )
             }
 			else
 				If GetKeyState("RButton", "LButton")
@@ -433,6 +524,67 @@ akLaser()
                 Sleep, 1
                     moveAmount := (moveAmount = 2) ? 1 : 0
                     mouseXY(moveAmount, 2.5)
+            }
+            else
+                If GetKeyState("RButton", "LButton")
+                {
+                    Sleep, 1
+                        Y( moveAmount, 4 )
+                        X( moveAmount, -0.1 )
+                }
+			
+            If Not GetKeyState("LButton")
+            {
+                break
+            }
+		}
+	}
+}
+
+akSilencer()
+{
+	global _akSilencer
+    
+    If _akSilencer
+    {
+        Loop
+        {
+            If GetKeyState("LCtrl", "LButton")
+            {
+                Sleep, 1
+                    Y( moveAmount, 2 )
+                    X( moveAmount, -0.1105 )
+            }
+            else
+                If GetKeyState("RButton", "LButton")
+                {
+                    Sleep, 1
+                        Y( moveAmount, 3.563 )
+                        X( moveAmount, -0.1 )
+                }
+			
+            If Not GetKeyState("LButton")
+            {
+                break
+            }
+		}
+	}
+}
+
+akSilencerLaser()
+{
+	global _akSilencerLaser
+    
+    If _akSilencerLaser
+    {
+        Loop
+        {
+            If GetKeyState("LCtrl", "LButton")
+            {
+                Sleep, 1
+                    moveAmount := (moveAmount = 2) ? 1 : 0
+                    mouseXY(moveAmount, 2)
+                    Y( moveAmount, -0.175 )
             }
             else
                 If GetKeyState("RButton", "LButton")
@@ -581,7 +733,6 @@ mp5()
             {
                 Sleep, 1
                     Y( moveAmount, 1.2 )
-                    X( moveAmount, 0 )
             }
             else
                 If GetKeyState("RButton", "LButton")
@@ -590,6 +741,34 @@ mp5()
                         Y( moveAmount, 3 )
                         X( moveAmount, -1.4 )
                         X( moveAmount, 1 )
+                }
+                
+                If Not GetKeyState( "LButton" ) 
+                {
+                    Break
+                }
+        }
+    }
+}
+
+p250()
+{
+    global _p250
+    
+    If _p250
+    {
+        Loop
+        {
+            If GetKeyState("LCtrl", "LButton")
+            {
+                Sleep, 1
+                    Y( moveAmount, 3.5 )
+            }
+            else
+                If GetKeyState("RButton", "LButton")
+                {
+                    Sleep, 1
+                        Y( moveAmount, 6 )
                 }
                 
                 If Not GetKeyState( "LButton" ) 
